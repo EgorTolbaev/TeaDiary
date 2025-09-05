@@ -75,7 +75,7 @@ namespace TeaDiary.Api.Controllers
         /// <param name="impressionDto">Данные для создания впечатления.</param>
         /// <returns>Созданное впечатление с кодом 201.</returns>
         [HttpPost]
-        public async Task<ActionResult<ImpressionCreateUpdateDto>> PostImpression([FromBody] ImpressionCreateUpdateDto impressionDto)
+        public async Task<ActionResult<ImpressionCreateDto>> PostImpression([FromBody] ImpressionCreateDto impressionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -114,10 +114,10 @@ namespace TeaDiary.Api.Controllers
         /// Обновить данные существующего впечатления.
         /// </summary>
         /// <param name="id">Id впечатления для обновления.</param>
-        /// <param name="impressionCreateUpdateDto">Обновленные данные впечатления в формате DTO.</param>
+        /// <param name="impressionUpdateDto">Обновленные данные впечатления в формате DTO.</param>
         /// <returns>204 NoContent при успешном обновлении, 400 при ошибках валидации или 404 при отсутствии впечатления.</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutImpression(Guid id, [FromBody] ImpressionCreateUpdateDto impressionCreateUpdateDto)
+        public async Task<IActionResult> PutImpression(Guid id, [FromBody] ImpressionUpdateDto impressionUpdateDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -127,9 +127,7 @@ namespace TeaDiary.Api.Controllers
                 return NotFound();
 
             // Обновляем разрешённые поля
-            impression.Text = impressionCreateUpdateDto.Text;
-            impression.TeaId = impressionCreateUpdateDto.TeaId;
-            impression.UserId = impressionCreateUpdateDto.UserId;
+            impression.Text = impressionUpdateDto.Text;
 
             try
             {
