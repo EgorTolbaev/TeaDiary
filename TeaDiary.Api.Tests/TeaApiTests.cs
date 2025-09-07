@@ -8,13 +8,15 @@ using Xunit.Abstractions;
 
 namespace TeaDiary.Api.Tests
 {
-    public class TeaApiTests : IClassFixture<WebApplicationFactory<Program>>
+    public class TeaApiTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;
+        private readonly CustomWebApplicationFactory _factory;
         private readonly ITestOutputHelper _output;
 
-        public TeaApiTests(WebApplicationFactory<Program> factory, ITestOutputHelper output)
+        public TeaApiTests(CustomWebApplicationFactory factory, ITestOutputHelper output)
         {
+            _factory = factory;
             _client = factory.CreateClient();
             _output = output;
         }
@@ -35,23 +37,39 @@ namespace TeaDiary.Api.Tests
             Assert.False(string.IsNullOrEmpty(content));
         }
 
+
         [Fact]
         public async Task GetTea_ById_ReturnsSuccess()
         {
-            var teaId = "6ced17d9-72a9-4d13-85dd-03a43340a263";
+            var newTea = new
+            {
+                Name = "Test Tea " + Guid.NewGuid(),
+                TeaTypeId = _factory.TeaTypeId, // Используйте из фикстуры
+                YearCollection = "2025",
+                Quantity = 10,
+                Price = 100,
+                LinkPurchase = "https://example.com",
+                WouldBuyAgain = true,
+                Description = "Test description",
+                UserId = "3e110463-5d1a-405e-80fa-926157ec01ef",
+                LinkToPhoto = "https://example.com/photo.jpg"
+            };
 
-            // Выполняем GET запрос по адресу с Id
-            var response = await _client.GetAsync($"/api/tea/{teaId}");
+            var createResponse = await _client.PostAsJsonAsync("/api/tea", newTea);
+            createResponse.EnsureSuccessStatusCode();
 
-            // Проверяем успешность запроса
+            var createdContent = await createResponse.Content.ReadFromJsonAsync<JsonElement>();
+            string createdId = createdContent.GetProperty("id").GetString();
+
+            // Далее выполняем чтение по id
+            var response = await _client.GetAsync($"/api/tea/{createdId}");
             response.EnsureSuccessStatusCode();
 
-            // Получаем содержимое (тело) ответа
             var content = await response.Content.ReadAsStringAsync();
-
-            // Проверяем, что содержимое не пустое
             Assert.False(string.IsNullOrEmpty(content));
         }
+
+
 
         [Fact]
         public async Task PostTea_CreatesNewTea_ReturnsCreatedTea()
@@ -59,7 +77,7 @@ namespace TeaDiary.Api.Tests
             var newTea = new
             {
                 Name = "Test Tea " + Guid.NewGuid(),
-                TeaTypeId = (Guid?)null,
+                TeaTypeId = _factory.TeaTypeId,
                 YearCollection = "2025",
                 Quantity = 10,
                 Price = 100,
@@ -86,7 +104,7 @@ namespace TeaDiary.Api.Tests
             var newTea = new
             {
                 Name = "Test Tea " + Guid.NewGuid(),
-                TeaTypeId = (Guid?)null,
+                TeaTypeId = _factory.TeaTypeId,
                 YearCollection = "2025",
                 Quantity = 10,
                 Price = 100,

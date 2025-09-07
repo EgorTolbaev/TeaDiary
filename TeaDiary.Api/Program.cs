@@ -2,11 +2,20 @@ using TeaDiary.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using TeaDiary.Api.Middleware;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<TeaDiaryContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<TeaDiaryContext>(options =>
+        options.UseInMemoryDatabase("TestDb"));
+}
+else
+{
+    builder.Services.AddDbContext<TeaDiaryContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -36,6 +45,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 WebApplication app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();

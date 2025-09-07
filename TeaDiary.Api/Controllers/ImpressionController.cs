@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeaDiary.Api.Data;
 using TeaDiary.Api.Dtos;
+using TeaDiary.Api.Exceptions;
 using TeaDiary.Api.Models;
 
 namespace TeaDiary.Api.Controllers
@@ -52,11 +53,7 @@ namespace TeaDiary.Api.Controllers
             Impression? impression = await _context.Impressions
                 .Include(i => i.Tea)
                 .Include(i => i.User)
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (impression == null)
-                return NotFound();
-
+                .FirstOrDefaultAsync(i => i.Id == id) ?? throw new NotFoundException("Впечатление не найдено");
             ImpressionReadDto impressionDtos = new()
             {
                 Id = impression.Id,
@@ -122,11 +119,7 @@ namespace TeaDiary.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            Impression? impression = await _context.Impressions.FindAsync(id);
-            if (impression == null)
-                return NotFound();
-
-            // Обновляем разрешённые поля
+            Impression? impression = await _context.Impressions.FindAsync(id) ?? throw new NotFoundException("Впечатление не найдено");
             impression.Text = impressionUpdateDto.Text;
 
             try
@@ -152,10 +145,7 @@ namespace TeaDiary.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImpression(Guid id)
         {
-            Impression? impression = await _context.Impressions.FindAsync(id);
-            if (impression == null)
-                return NotFound();
-
+            Impression? impression = await _context.Impressions.FindAsync(id) ?? throw new NotFoundException("Впечатление не найдено");
             _context.Impressions.Remove(impression);
             await _context.SaveChangesAsync();
 

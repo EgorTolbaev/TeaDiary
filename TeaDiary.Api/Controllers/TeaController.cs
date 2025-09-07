@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeaDiary.Api.Data;
 using TeaDiary.Api.Dtos;
+using TeaDiary.Api.Exceptions;
 using TeaDiary.Api.Models;
 
 namespace TeaDiary.Api.Controllers
@@ -56,11 +57,7 @@ namespace TeaDiary.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TeaReadDto>> GetTea(Guid id)
         {
-            Tea? tea = await _context.Teas.Include(t => t.TeaType).FirstOrDefaultAsync(t => t.Id == id);
-
-            if (tea == null)
-                return NotFound();
-
+            Tea? tea = await _context.Teas.Include(t => t.TeaType).FirstOrDefaultAsync(t => t.Id == id) ?? throw new NotFoundException("Чай не найден");
             TeaReadDto teaReadDto = new()
             {
                 Id = tea.Id,
@@ -179,10 +176,7 @@ namespace TeaDiary.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTea(Guid id)
         {
-            Tea? tea = await _context.Teas.FindAsync(id);
-            if (tea == null)
-                return NotFound();
-
+            Tea? tea = await _context.Teas.FindAsync(id) ?? throw new NotFoundException("Чай не найден");
             _context.Teas.Remove(tea);
             await _context.SaveChangesAsync();
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using TeaDiary.Api.Data;
 using TeaDiary.Api.Models;
 using TeaDiary.Api.Dtos;
+using TeaDiary.Api.Exceptions;
 
 namespace TeaDiary.Api.Controllers
 {
@@ -53,11 +54,7 @@ namespace TeaDiary.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserReadDto>> GetUser(Guid id)
         {
-            User? user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-                return NotFound();
-
+            User? user = await _context.Users.FindAsync(id) ?? throw new NotFoundException("Пользователь не найден");
             UserReadDto userDto = new()
             {
                 Id = user.Id,
@@ -126,10 +123,7 @@ namespace TeaDiary.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            User? user = await _context.Users.FindAsync(id);
-            if (user == null)
-                return NotFound();
-
+            User? user = await _context.Users.FindAsync(id) ?? throw new NotFoundException("Пользователь не найден");
             user.FirstName = userDto.FirstName;
             user.LastName = userDto.LastName;
             user.MiddleName = userDto.MiddleName;
@@ -164,10 +158,7 @@ namespace TeaDiary.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            User? user = await _context.Users.FindAsync(id);
-            if (user == null)
-                return NotFound();
-
+            User? user = await _context.Users.FindAsync(id) ?? throw new NotFoundException("Пользователь не найден");
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeaDiary.Api.Data;
 using TeaDiary.Api.Dtos;
+using TeaDiary.Api.Exceptions;
 using TeaDiary.Api.Models;
 
 namespace TeaDiary.Api.Controllers
@@ -46,11 +47,7 @@ namespace TeaDiary.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TeaTypeReadDto>> GetTeaType(Guid id)
         {
-            TeaType? teaType = await _context.TeaTypes.FirstOrDefaultAsync(t => t.Id == id);
-
-            if (teaType == null)
-                return NotFound();
-
+            TeaType? teaType = await _context.TeaTypes.FirstOrDefaultAsync(t => t.Id == id) ?? throw new NotFoundException("Тип чая не найден");
             TeaTypeReadDto teaTypeReadDto = new()
             {
                 Id = teaType.Id,
@@ -104,9 +101,7 @@ namespace TeaDiary.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            TeaType? teaType = await _context.TeaTypes.FindAsync(id);
-            if (teaType == null)
-                return NotFound();
+            TeaType? teaType = await _context.TeaTypes.FindAsync(id) ?? throw new NotFoundException("Тип чая не найден");
 
             // Обновляем разрешённые поля
             teaType.Name = teaTypeCreateUpdateDto.Name;
@@ -135,10 +130,7 @@ namespace TeaDiary.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTea(Guid id)
         {
-            TeaType? teaType = await _context.TeaTypes.FindAsync(id);
-            if (teaType == null)
-                return NotFound();
-
+            TeaType? teaType = await _context.TeaTypes.FindAsync(id) ?? throw new NotFoundException("Тип чая не найден");
             _context.TeaTypes.Remove(teaType);
             await _context.SaveChangesAsync();
 
