@@ -52,5 +52,11 @@ namespace TeaDiary.Api.Models
         /// Коллекция чаёв, относящихся к этому пользователю
         /// </summary>
         public List<Tea> Teas { get; set; } = [];
+
+        /// <summary>
+        /// Роль пользователя (например, "User" или "Admin")
+        /// </summary>
+        [Required]
+        public string Role { get; set; } = "User";
     }
 }

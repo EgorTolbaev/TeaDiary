@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeaDiary.Api.Data;
@@ -10,6 +11,7 @@ namespace TeaDiary.Api.Controllers
     /// <summary>
     /// Контроллер для работы с впечатлениями о чае.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ImpressionController : ControllerBase
@@ -25,6 +27,7 @@ namespace TeaDiary.Api.Controllers
         /// Получить список всех впечатлений о чае.
         /// </summary>
         /// <returns>Список впечатлений о чае.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImpressionReadDto>>> GetImpressions()
         {

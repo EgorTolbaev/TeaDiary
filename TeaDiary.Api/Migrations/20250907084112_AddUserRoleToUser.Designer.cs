@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TeaDiary.Api.Data;
@@ -11,9 +12,11 @@ using TeaDiary.Api.Data;
 namespace TeaDiary.Api.Migrations
 {
     [DbContext(typeof(TeaDiaryContext))]
-    partial class TeaDiaryContextModelSnapshot : ModelSnapshot
+    [Migration("20250907084112_AddUserRoleToUser")]
+    partial class AddUserRoleToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

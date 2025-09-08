@@ -5,12 +5,14 @@ using TeaDiary.Api.Data;
 using TeaDiary.Api.Models;
 using TeaDiary.Api.Dtos;
 using TeaDiary.Api.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TeaDiary.Api.Controllers
 {
     /// <summary>
     /// Контроллер для работы с пользователем.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -27,6 +29,7 @@ namespace TeaDiary.Api.Controllers
         /// Получить список всех пользователей (без паролей).
         /// </summary>
         /// <returns>Список пользователей в безопасном формате.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserReadDto>>> GetUsers()
         {
