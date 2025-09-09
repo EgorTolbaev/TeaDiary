@@ -18,7 +18,7 @@
 ```
 TeaDiary/
 ├── TeaDiary.Api/ # API сервер
-├── TeaDiary.Client/ # Клиентская часть (UI)
+├── teadiary.client/ # Клиентская часть (UI)
 ├── TeaDiary.Api.Tests/ # Тесты
 ├── docker-compose.yml # Описание контейнеров для БД и API
 ├── README.md # Этот файл

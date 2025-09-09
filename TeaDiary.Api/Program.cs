@@ -13,6 +13,22 @@ using System.Text;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // -----------------------------
+// Добавить CORS
+// -----------------------------
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// -----------------------------
 // Конфигурация базы данных
 // -----------------------------
 // Используем InMemoryDatabase для тестов, PostgreSQL для боевого режима
@@ -130,6 +146,9 @@ builder.Services.AddSingleton<JwtTokenService>();
 // Сборка и запуск приложения
 // -----------------------------
 WebApplication app = builder.Build();
+
+// Включение CORS
+app.UseCors(MyAllowSpecificOrigins);
 
 // Глобальная обработка ошибок (middleware)
 app.UseMiddleware<ExceptionHandlingMiddleware>();
